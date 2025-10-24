@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Love Letters</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+  <!-- Fuentes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ms+Madi&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sour+Gummy:wght@600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <h1 class="ms-madi-regular">Love</h1>
+  <h1 class="ms-madi-regular">Letters</h1>
+
+  <div class="contenedor sour-gummy">
+    <h2>¡Que mensaje más bonito!</h2>
+
+    <section id="seccion-descifrar">
+      <input type="password" id="claveDescifrar" placeholder="Introduce la clave para descifrar" />
+      <button id="btnDescifrar">Descifrar mensaje</button>
+      <p id="resultado"></p>
+
+      <div class="contenedor-boton">
+        <button id="boton-nuevo" class="boton-nuevo">Crear mi propio mensaje</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
+

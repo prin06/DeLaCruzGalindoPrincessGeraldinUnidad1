@@ -1,0 +1,218 @@
+:root {
+  --color-fondo: #fff9ef;
+  --color-principal: #b91c1c;
+  --color-secundario: #f87171;
+  --color-texto: #3b0a0a;
+  --color-blanco: #ffffff;
+}
+
+/* ----- Fuente decorativa del título ----- */
+.ms-madi-regular {
+  font-family: "Ms Madi", cursive;
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* ----- Fuente principal de toda la interfaz ----- */
+body, input, textarea, button, h1, h2, p, ::placeholder {
+  font-family: "Sour Gummy", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+}
+
+/* ----- Reset ----- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ----- Fondo con ondas ----- */
+body {
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
+  flex-direction: column;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' preserveAspectRatio='none'><path d='M0,10 Q10,0 20,10 T40,10 T60,10 T80,10 T100,10 T120,10 T140,10 T160,10 T180,10 T200,10 L200,190 Q190,200 180,190 T160,190 T140,190 T120,190 T100,190 T80,190 T60,190 T40,190 T20,190 T0,190 Z' fill='none' stroke='%23b91c1c' stroke-width='3'/></svg>") center / 100% 100% no-repeat;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ----- Títulos "Love Letters" decorativos ----- */
+.ms-madi-regular {
+  position: absolute;
+  z-index: 5;
+  font-size: 90px;
+  color: var(--color-principal);
+  pointer-events: none;
+}
+
+/* "Love" arriba izquierda */
+.ms-madi-regular:nth-of-type(1) {
+  top: 40px;
+  left: calc(50% - 180px);
+}
+
+/* "Letters" un poco más abajo a la derecha */
+.ms-madi-regular:nth-of-type(2) {
+  top: 100px;
+  right: calc(50% - 180px);
+}
+
+/* ----- Contenedor principal ----- */
+.contenedor {
+  position: relative;
+  z-index: 2;
+  width: 90%;
+  max-width: 600px;
+  background: var(--color-blanco);
+  border: 3px dashed var(--color-principal);
+  border-radius: 10px;
+  padding: 30px 35px;
+  text-align: center;
+}
+
+/* ----- Borde tipo estampilla (sin sombra) ----- */
+.contenedor::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 14px;
+  background: repeating-linear-gradient(
+    0deg,
+    var(--color-principal) 0,
+    var(--color-principal) 10px,
+    transparent 10px,
+    transparent 20px
+  ),
+  repeating-linear-gradient(
+    90deg,
+    var(--color-principal) 0,
+    var(--color-principal) 10px,
+    transparent 10px,
+    transparent 20px
+  ),
+  repeating-linear-gradient(
+    180deg,
+    var(--color-principal) 0,
+    var(--color-principal) 10px,
+    transparent 10px,
+    transparent 20px
+  ),
+  repeating-linear-gradient(
+    270deg,
+    var(--color-principal) 0,
+    var(--color-principal) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+  background-size: 100% 4px, 4px 100%, 100% 4px, 4px 100%;
+  background-position: top left, top right, bottom left, top left;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.3;
+}
+
+/* ----- Títulos dentro del formulario ----- */
+h2 {
+  color: var(--color-principal);
+  margin-bottom: 15px;
+  letter-spacing: 1px;
+}
+
+/* ----- Inputs y textarea ----- */
+input, textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--color-secundario);
+  background-color: #fffdf8;
+  font-size: 16px;
+  resize: none;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  border-radius: 6px;
+}
+
+textarea {
+  min-height: 150px;
+}
+
+input:focus, textarea:focus {
+  border-color: var(--color-principal);
+  outline: none;
+  box-shadow: none;
+}
+
+/* ----- Placeholders con fuente y color tenue ----- */
+::placeholder {
+  color: #c78b8b;
+  opacity: 1;
+  font-family: "Sour Gummy", sans-serif;
+  font-weight: 600;
+}
+
+/* ----- Botones ----- */
+button {
+  background-color: var(--color-principal);
+  color: var(--color-blanco);
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s ease;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+button:hover {
+  background-color: #7a0f0f;
+}
+
+/* ----- Resultado ----- */
+#resultado {
+  word-break: break-word;
+  margin-top: 15px;
+}
+
+/* ----- Botón centrado ----- */
+.contenedor-boton {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* ----- Responsive ----- */
+@media (max-width: 600px) {
+  .ms-madi-regular {
+    font-size: 60px;
+  }
+  .ms-madi-regular:nth-of-type(1) {
+    top: 20px;
+    left: calc(50% - 120px);
+  }
+  .ms-madi-regular:nth-of-type(2) {
+    top: 70px;
+    right: calc(50% - 120px);
+  }
+  .contenedor {
+    padding: 20px;
+  }
+  textarea {
+    min-height: 120px;
+  }
+}
