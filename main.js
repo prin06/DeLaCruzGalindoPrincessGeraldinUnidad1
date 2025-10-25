@@ -1,7 +1,12 @@
-// main.js - versión completa con cifrado AES + firma digital (SHA-256)
-// Compatible con index.html y recibir.html
+// main.js - versión segura con cifrado AES y verificación SHA-256
 
 document.addEventListener("DOMContentLoaded", () => {
+  // --- CAMBIO: Content Security Policy para proteger scripts externos ---
+  const meta = document.createElement("meta");
+  meta.httpEquiv = "Content-Security-Policy";
+  meta.content = "default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com;";
+  document.head.appendChild(meta);
+
   // Elementos comunes
   const btnCifrar = document.getElementById("btnCifrar");
   const btnNuevo = document.getElementById("btnNuevo");
@@ -12,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const formulario = document.getElementById("formulario");
   const resultado = document.getElementById("resultado");
 
-  // --- Funciones auxiliares ---
+  // Funciones auxiliares
   function escapeHtml(str) {
     return str
       .replaceAll("&", "&amp;")
@@ -22,25 +27,24 @@ document.addEventListener("DOMContentLoaded", () => {
       .replaceAll("'", "&#039;");
   }
 
+  // --- CAMBIO: construcción segura de la URL ---
   function construirUrlRecibir(hashTexto) {
-    const url = new URL("recibir.html#" + encodeURIComponent(hashTexto), window.location.href);
-    return url.href;
+    const base = window.location.origin + window.location.pathname.replace("index.html", "");
+    const url = base + "recibir.html#" + encodeURIComponent(hashTexto);
+    return url;
   }
 
-  // Crear "firma digital" simulada (hash SHA-256 del mensaje + clave)
+  // Hash SHA-256 como firma digital
   function generarFirmaDigital(mensaje, clave) {
     const data = mensaje + clave;
-    const hash = CryptoJS.SHA256(data).toString();
-    return hash;
+    return CryptoJS.SHA256(data).toString();
   }
 
-  // Verificar firma digital
   function verificarFirmaDigital(mensaje, clave, firmaOriginal) {
-    const nuevaFirma = generarFirmaDigital(mensaje, clave);
-    return nuevaFirma === firmaOriginal;
+    return generarFirmaDigital(mensaje, clave) === firmaOriginal;
   }
 
-  // --- CIFRADO (index.html) ---
+  // Cifrado (index.html)
   if (btnCifrar) {
     btnCifrar.addEventListener("click", () => {
       const mensaje = mensajeInput.value.trim();
@@ -51,22 +55,18 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // Cifrar mensaje con AES
-      const cifrado = CryptoJS.AES.encrypt(mensaje, clave).toString();
+      // --- CAMBIO: validación de longitud de clave ---
+      if (clave.length < 6) {
+        alert("La clave debe tener al menos 6 caracteres para mayor seguridad.");
+        return;
+      }
 
-      // Generar firma digital (integridad)
+      const cifrado = CryptoJS.AES.encrypt(mensaje, clave).toString();
       const firma = generarFirmaDigital(mensaje, clave);
 
-      // Crear objeto que combine mensaje cifrado + firma
-      const paqueteSeguro = JSON.stringify({
-        data: cifrado,
-        firma: firma,
-      });
-
-      // Construir enlace
+      const paqueteSeguro = JSON.stringify({ data: cifrado, firma });
       const enlaceHref = construirUrlRecibir(btoa(paqueteSeguro));
 
-      // Mostrar enlace cifrado
       enlaceCifradoCont.innerHTML = "";
       const a = document.createElement("a");
       a.href = enlaceHref;
@@ -76,13 +76,12 @@ document.addEventListener("DOMContentLoaded", () => {
       a.style.wordBreak = "break-all";
       enlaceCifradoCont.appendChild(a);
 
-      // Cambiar secciones
       formulario.style.display = "none";
       resultado.style.display = "block";
     });
   }
 
-  // --- COPIAR ENLACE ---
+  // Copiar enlace
   if (btnCopiar) {
     btnCopiar.addEventListener("click", async () => {
       try {
@@ -99,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- NUEVO MENSAJE ---
+  // Nuevo mensaje
   if (btnNuevo) {
     btnNuevo.addEventListener("click", () => {
       mensajeInput.value = "";
@@ -111,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- DESCIFRADO (recibir.html) ---
+  // Descifrado (recibir.html)
   const btnDescifrar = document.getElementById("btnDescifrar");
   const resultadoTexto = document.getElementById("resultado");
   const claveDescifrar = document.getElementById("claveDescifrar");
@@ -126,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (!hashFragment) {
-        resultadoTexto.innerHTML = `<div class="tarjeta error">❌ No hay mensaje en la URL.</div>`;
+        resultadoTexto.innerHTML = `<div class="tarjeta error">No hay mensaje en la URL.</div>`;
         return;
       }
 
@@ -135,24 +134,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const cifrado = paqueteSeguro.data;
         const firmaOriginal = paqueteSeguro.firma;
 
-        // Descifrar
         const bytes = CryptoJS.AES.decrypt(cifrado, clave);
         const mensajeDescifrado = bytes.toString(CryptoJS.enc.Utf8);
 
         if (!mensajeDescifrado) {
-          resultadoTexto.innerHTML = `<div class="tarjeta error">❌ Clave incorrecta o mensaje dañado.</div>`;
+          resultadoTexto.innerHTML = `<div class="tarjeta error">Clave incorrecta.</div>`;
           return;
         }
 
-        // Verificar integridad con firma
         const esValido = verificarFirmaDigital(mensajeDescifrado, clave, firmaOriginal);
-
         if (!esValido) {
-          resultadoTexto.innerHTML = `<div class="tarjeta error">⚠️ Mensaje alterado o firma inválida.</div>`;
+          resultadoTexto.innerHTML = `<div class="tarjeta error">Mensaje alterado o firma inválida.</div>`;
           return;
         }
 
-        // Mostrar mensaje descifrado y botón
         const seccion = document.getElementById("seccion-descifrar");
         if (seccion) {
           const inputs = seccion.querySelectorAll("input, button");
@@ -168,16 +163,17 @@ document.addEventListener("DOMContentLoaded", () => {
           contBoton.appendChild(boton);
           seccion.appendChild(contBoton);
         }
-      } catch (e) {
-        resultadoTexto.innerHTML = `<div class="tarjeta error">❌ Error al procesar el mensaje.</div>`;
+      } catch {
+        resultadoTexto.innerHTML = `<div class="tarjeta error">Error al procesar el mensaje.</div>`;
       }
     });
   }
 
-  // --- BOTÓN CREAR MI PROPIO MENSAJE (recibir.html) ---
+  // Botón crear nuevo mensaje en recibir.html
   const botonNuevo = document.getElementById("boton-nuevo");
   if (botonNuevo) {
     botonNuevo.addEventListener("click", () => (window.location.href = "index.html"));
   }
 });
+
 
